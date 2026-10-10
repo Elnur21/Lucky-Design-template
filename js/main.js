@@ -17,13 +17,25 @@ document.querySelector(".dropdown").addEventListener("mouseout", () => {
     document.querySelector(".dropdown>ul").classList.add("d-none");
 });
 
-for (const addToCart of document.querySelectorAll(".addToCart")) {
-    addToCart.addEventListener("click", () => {
+// Delegated so it also works for cards rendered from js/store.js.
+document.addEventListener("click", (event) => {
+    if (event.target.closest(".addToCart")) {
         for (const addValue of document.querySelectorAll(".addValue")) {
             addValue.innerText = parseInt(addValue.textContent) + 1;
         }
-    });
-}
+        return;
+    }
+
+    const heart = event.target.closest(".heart-outline, .heart-filled");
+    if (!heart) return;
+    const liked = heart.classList.contains("heart-outline");
+    const sibling = liked ? heart.nextElementSibling : heart.previousElementSibling;
+    heart.classList.add("d-none");
+    sibling.classList.remove("d-none");
+    for (const likes of document.querySelectorAll(".likes")) {
+        likes.innerText = parseInt(likes.textContent) + (liked ? 1 : -1);
+    }
+});
 document.addEventListener("scroll", () => {
     if (document.documentElement.scrollTop > 200) {
         document.querySelector(".position-fixed").classList.remove("d-none");
@@ -32,22 +44,6 @@ document.addEventListener("scroll", () => {
     }
 });
 
-for (const likes of document.querySelectorAll(".likes")) {
-    for (const heart_outline of document.querySelectorAll(".heart-outline")) {
-        heart_outline.addEventListener("click", () => {
-            heart_outline.classList.add("d-none");
-            heart_outline.nextElementSibling.classList.remove("d-none");
-            likes.innerText = parseInt(likes.textContent) + 1;
-        });
-    }
-    for (const heart_filled of document.querySelectorAll(".heart-filled")) {
-        heart_filled.addEventListener("click", () => {
-            heart_filled.classList.add("d-none");
-            heart_filled.previousElementSibling.classList.remove("d-none");
-            likes.innerText = parseInt(likes.textContent) - 1;
-        });
-    }
-}
 var swiper1 = new Swiper(".mySwiper", {
     navigation: {
         nextEl: ".swiper-button-next",
